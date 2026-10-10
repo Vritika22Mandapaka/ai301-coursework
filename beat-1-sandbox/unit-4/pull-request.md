@@ -1,61 +1,56 @@
 # Unit 4 — Test and Submit
 
-Path: `beat-1-sandbox/unit-4/pull-request.md`
-
-Record of the pull request you opened against the Path Review repo, and of the evaluation
-runs that produced `eval-run.txt`. This file is graded at the path above; a copy kept
-anywhere else in the repository is not read.
-
-Complete every labelled field below. Each is graded on its own; content placed under the wrong
-label is not graded.
-
----
-
 ## Your pull request
 
 **Pull request**
 
-[Link to the pull request you opened. It must be the pull request's own page on the Path
-Review repo, not your fork's branch page.]
+https://github.com/codepath/pathreview-ai301-fa26-s1/pull/112
 
 **Branch**
 
-[The name of the branch the pull request comes from, exactly as it appears in your fork.
-The naming shape is a type prefix, then the issue number, then a short description. **The
-issue number in the branch name must be the number of the issue the pull request fixes** —
-a name carrying any other number does not satisfy this field.]
+`fix/58-bias-detector-patterns`
 
 ## Eval iterations
 
-Answer all four sections. Quote source text directly; paraphrase does not satisfy these
-fields.
-
 **Run history**
 
-[The agreement score of each run you did, in order. A single run is a complete answer if
-only one run occurred. **The last score in your list must match the agreement line in the
-`eval-run.txt` you committed** — that file is the record of your final run.]
+Final recorded evaluation: **18/20 agreement (PASS)**.
+
+The final evaluation file, `beat-1-sandbox/unit-4/eval-run.txt`, reports:
+
+> agreement: 18/20 scored items  (bar: 18/20: PASS)
+
+This is the only evaluation run whose complete results are available in the current record. Any earlier complete evaluation runs should be added here in chronological order if they occurred.
 
 **Package analysis**
 
-[Pick one scored package (`pkg-01` through `pkg-20` — the four `calib-` packages are never
-scored). Name it by id, say what your rubric decided and what the gold label said, and
-explain why your rubric read it that way.]
+Package: `pkg-08` (`clear-accept`).
+
+- **Rubric verdict:** `reject`
+- **Gold label:** `accept`
+- **Agreement:** No
+- **Failed check:** `repository-checks`
+
+The rubric rejected this package because its assessment of `repository-checks` did not establish a passing result. The gold label accepted the package.
+
+The likely source of the disagreement is that the rubric treated repository-validation evidence more strictly than the gold standard required. The final rubric explicitly allows accurately disclosed validation shortfalls unless repository policy makes a check mandatory. The evaluation summary does not include the package's underlying evidence, so this explanation is a hypothesis rather than a verified account of the specific failure.
 
 **Check rationale**
 
-[Quote one check from the `rubric.md` you uploaded to `tools/pr-precheck/`, exactly as it reads now.
-Then say why it reads that way — what you revised to get there, or what you rejected in
-favour of it.]
+Exact check from `rubric.md`:
+
+> repository-checks | Repository-defined validation commands compared with the test evidence and PR disclosure | Required repository checks have credible results, or any checks not run or failing are accurately disclosed with their implications. A disclosed shortfall is not automatically a failure unless repository policy explicitly makes the check mandatory for submission. | required
+
+This check balances verification with truthful reporting. It requires credible evidence for completed checks while allowing clearly disclosed limitations when the repository does not explicitly prohibit submission.
+
+The wording avoids treating every missing or unsuccessful optional check as an automatic rejection. It also prevents a contributor from claiming that tests passed without supporting evidence.
 
 **Trade-offs**
 
-[Every check gives something up. Any one of these is a complete answer: a package whose
-result it changes, a canary you re-ran with `--only`, a case you accept it will miss, or a
-stated reason nothing changed elsewhere. "Nothing changed, and here is how I know" earns
-the point in full when the reason follows.]
+This check may accept a pull request even when some validation work has not been completed, provided the shortfall is disclosed and repository policy does not make the check mandatory.
 
----
+That improves fairness for packages with honest reporting, but it also means the rubric must distinguish carefully between optional validation and mandatory submission requirements.
 
-Related paths: `eval-run.txt` in this directory; your skill's files in
-`tools/pr-precheck/`.
+The final evaluation shows that `pkg-08` was still rejected on `repository-checks` despite its gold `accept` label. This is a known remaining false rejection in the final evaluation.
+
+The other 18 scored packages agreed with their gold labels, and the final evaluation met the required **18/20** agreement threshold.
