@@ -1,4 +1,4 @@
-# Contribution: [Issue Title]
+# Contribution: Support CODEX_LB_ENCRYPTION_KEY for Stateless Replicas
 
 Path: `beat-2-contribution/contribution-story.md`
 
@@ -8,11 +8,10 @@ format criteria grade exactly that. Your course repo link is the whole submissio
 files and no evidence uploads are part of Assignment 5.
 
 **Contribution Number:** [1]
-**Student:** [Student name]
-**GitHub Username:** [your GitHub username, exactly as it appears on your profile - no @, no
-profile URL. Your comments upstream are identified by this name.]
-**Issue:** [GitHub issue link]
-**Pull Request:** [GitHub PR link, once opened]
+**Student:** Kamakshi Padma Vritika Mandapaka
+**GitHub Username:** Vritika22Mandapaka
+**Issue:** https://github.com/Soju06/codex-lb/issues/1572
+**Pull Request:** Not opened yet — awaiting maintainer feedback.
 
 One repository, built across units 5 to 8, telling the whole story of your real
 contribution. Fill it as you work, not at the end — the sections below ask for evidence that
@@ -55,10 +54,9 @@ happened; these entries are the toolkit's own timeline.
 All four entries are graded. Keep every heading below, and fill each
 one in the week it belongs to.
 
-**Unit 5: [one line on the tool work]**
+**Unit 5: Built an issue-scout workflow to evaluate open-source contribution opportunities**
 
-[2-4 sentences: what you built (the scout, your strategy), what broke
-or fell short, what changed because of it.]
+I created an issue-scout skill using Claude Code to research and evaluate GitHub issues based on project activity, technical feasibility, and alignment with my Python and AI interests. My initial search returned several issues that were already closed, claimed, or too broad for my timeline, so I refined the selection process to verify issue status, existing pull requests, maintainer activity, and implementation scope. After comparing multiple candidates, I selected codex-lb Issue #1572 because it involves Python backend development, encryption-key management, and deployment reliability. I also contacted the maintainer with my proposed implementation approach and questions about the project's configuration constraints.
 
 **Unit 6: [one line on the tool work]**
 
