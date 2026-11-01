@@ -60,10 +60,9 @@ While installing the voice guard, I discovered that the starter hook checked onl
 
 Finally, I used Claude Code to inspect three relevant EcoTrace files and created a local CLAUDE.local.md documenting contribution conventions, the FastAPI middleware, tests, and repository practices. I added the file to .git/info/exclude and verified that Git ignores it, keeping my AI-specific working notes out of the upstream repository.
 
-**Unit 7: [one line on the tool work]**
+**Unit 7: Built and ran a retrospective ship-gate for my EcoTrace contribution.**
 
-[2-4 sentences: the ship-gate and your gate manifest. What it produced
-on your real branch, what fought you, what changed because of it.]
+I created a ship manifest defining the full test suite and scoped lint for the FastAPI example, then ran the ship-gate against my feat/fastapi-example branch, issue #211, and PR description. The gate passed all nine required rubric checks and the preferred reviewer-context check. The full test suite passed with 239 tests passed and 2 skipped, and the scoped lint check passed. The process also highlighted the distinction between scoped and repository-wide lint, the importance of the actual PR template, and a missing final newline in the merged file. Because PR #228 was already merged and issue #211 was closed, I did not open a duplicate PR; I documented the exercise as retrospective.
 
 **Unit 8: [one line on the tool work]**
 
