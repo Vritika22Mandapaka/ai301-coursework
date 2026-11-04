@@ -5,6 +5,7 @@ GitHub Username: Vritika22Mandapaka
 Issue: https://github.com/Zwony/ecotrace/issues/211
 Pull Request: https://github.com/Zwony/ecotrace/pull/228
 Contribution Summary: Added a runnable FastAPI example demonstrating EcoTrace's existing emissions-tracking middleware. The implementation includes a lightweight health-check endpoint, a CPU-intensive computation endpoint, installation and execution instructions, and documentation of the emissions and duration response headers. The contribution was reviewed, approved, and merged by the repository owner.
+
 ## Toolkit
 Unit 5: Built an issue-scout workflow to evaluate open-source contribution opportunities
 
@@ -25,6 +26,7 @@ I created a ship manifest defining the full test suite and scoped lint for the F
 Unit 8: Installed the PR-monitor, created my playbook, and verified my merged EcoTrace contribution
 
 I installed CodePath's PR-monitor and wrote a personal playbook defining my response rules, review waiting periods, follow-up etiquette, and criteria for closing a contribution. I ran the free state check and full monitor against EcoTrace PR #228, which confirmed that the PR was merged with 11 passing checks and generated a run report and a drafted follow-up. The draft suggested thanking the maintainer and checking whether Issue #211 still needed to be closed. I verified through GitHub CLI that the issue was already closed as completed and decided not to post another comment because I had already thanked the maintainer. This taught me to review AI-generated suggestions against current repository evidence rather than automatically sending them.
+
 ## Why I Chose This Issue
 I began searching for open-source issues that matched my interests in Python, backend development, and AI-related developer tools. During Unit 5, I built an issue-scout workflow using Claude Code to assess issue availability, maintainer activity, technical feasibility, and scope. My initial choice was codex-lb Issue #1572, which proposed supporting environment-based encryption keys for stateless replicas. I reviewed the existing scoping notes, proposed an implementation approach, and asked about configuration precedence and safe handling of secrets. I did not receive a response to my questions, so I continued exploring opportunities rather than implementing the change without clarification.
 
@@ -43,6 +45,7 @@ Claim reflection: My original claim repeated the middleware class named in the i
 - What it produced: A shortlist of possible contributions and an evaluation of their technical scope, availability, and suitability for my skills. The process eventually led me to EcoTrace Issue #211.
 - Difficulties: Some issues were already claimed, too broad, or required clarification. The EcoTrace issue also referenced a middleware class and response header that did not match the existing implementation.
 - What changed: I added manual verification of repository code and maintainer communication to my issue-selection process before beginning implementation.
+
 ## Understanding the Issue
 **Problem Description**
 
@@ -75,18 +78,21 @@ I asked the maintainer to clarify this difference. The maintainer confirmed that
 - What it produced: An understanding of the existing middleware implementation, the expected example behavior, and the correct response-header names.
 - Difficulties: The middleware class and header specified in the issue description did not match the repository's existing code.
 - What changed: I contacted the maintainer for clarification and adjusted the implementation plan to use `EcoTraceMiddleware` from `ecotrace.middleware.fastapi` with its existing response headers.
+
 ## Reproduction Process
 **Environment Setup**
 
 I worked on Windows using VS Code and PowerShell. I cloned my EcoTrace fork and created a Python virtual environment (`.venv`) to isolate the project's dependencies.
 
 From the repository root, I installed the project with its web dependencies and installed FastAPI, Uvicorn, and pytest.
+
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install -e ".[web]"
 python -m pip install fastapi uvicorn pytest
 ```
+
 I used the `feat/fastapi-example` branch for the implementation. The virtual environment was excluded from Git tracking.
 
 Environment versions (retrospective verification): Python 3.13.12; EcoTrace 1.7.1; FastAPI 0.162.0; Starlette 1.10.0; Uvicorn 0.54.0; pytest 9.2.0. These versions were observed during Unit 6 verification and may differ from the original development environment.
@@ -97,9 +103,11 @@ Environment versions (retrospective verification): Python 3.13.12; EcoTrace 1.7.
 3. I found that the issue referenced `StarletteEmissionsMiddleware` and `X-Carbon-gCO2eq`, while the existing implementation used `EcoTraceMiddleware`, `X-Eco-Carbon-Emitted`, and `X-Eco-Duration`.
 4. I asked the maintainer for clarification. The maintainer confirmed that the example should use the existing middleware implementation.
 5. After implementing the example, I started the application using:
+
    ```powershell
    python -m uvicorn examples.fastapi_tracking:app --app-dir "$HOME\OneDrive\Desktop\AI301\ecotrace" --host 127.0.0.1 --port 8000
    ```
+
 6. I tested both endpoints using `curl.exe` and verified the HTTP responses and emissions-tracking headers.
 **Reproduction Evidence**
 - Implementation commit: https://github.com/Zwony/ecotrace/commit/0d6d842788588f8133fbe354866993355a679434
@@ -108,10 +116,10 @@ Environment versions (retrospective verification): Python 3.13.12; EcoTrace 1.7.
 - Observed results: The `/health` endpoint returned HTTP 200 and {"status":"ok"}. The `/compute` endpoint returned HTTP 200 and the expected result 333332833333500000. Both responses included `X-Eco-Carbon-Emitted` and `X-Eco-Duration`.
 - My findings: The problem was the absence of a runnable FastAPI reference example, not a failure in the existing middleware. I also identified a mismatch between the issue description and the repository implementation. After maintainer clarification, I used the supported middleware and confirmed that both endpoints worked.
 **Additional verified evidence (Unit 6 retrospective)**
-- Git command: git cat-file -e "0d6d842^:`examples/fastapi_tracking.py`"
+- Git command: git cat-file -e "0d6d842^:examples/fastapi_tracking.py"
 - Terminal output: fatal: path '`examples/fastapi_tracking.py`' exists on disk, but not in '0d6d842^'
 - Exit code: 128 (Git could not find the file in the parent commit).
-- The original issue referenced ecotrace.middleware.starlette.`StarletteEmissionsMiddleware` and `X-Carbon-gCO2eq`, but the existing implementation used `ecotrace.middleware.fastapi`.`EcoTraceMiddleware` and `X-Eco-Carbon-Emitted` / `X-Eco-Duration`.
+- The original issue referenced `ecotrace.middleware.starlette.StarletteEmissionsMiddleware` and `X-Carbon-gCO2eq`, but the existing implementation used `ecotrace.middleware.fastapi.EcoTraceMiddleware` and `X-Eco-Carbon-Emitted` / `X-Eco-Duration`.
 - I reported this mismatch in https://github.com/Zwony/ecotrace/issues/211#issuecomment-6507274270.
 - Maintainer Zwony explicitly approved using `EcoTraceMiddleware` and the existing X-Eco-* headers in https://github.com/Zwony/ecotrace/issues/211#issuecomment-6507532319.
 - The actual response headers were `X-Eco-Carbon-Emitted` and `X-Eco-Duration`.
@@ -134,6 +142,7 @@ Environment versions (retrospective verification): Python 3.13.12; EcoTrace 1.7.
 - What it produced: A reproducible local development environment, confirmation of the missing example, and successful HTTP responses containing emissions and duration headers.
 - Difficulties: The issue description referenced a middleware class that did not match the code. I also initially encountered a module import error when running Uvicorn with the short module name from the repository root.
 - What changed: I used the maintainer-approved middleware and corrected the Uvicorn command to `examples.fastapi_tracking:app` when running from the repository root. I also verified that `uvicorn fastapi_tracking:app --reload` worked from inside the examples/ directory.
+
 ## Solution Approach
 **Analysis**
 
@@ -173,6 +182,7 @@ I also corrected the Uvicorn launch command after discovering that `uvicorn fast
 - What it produced: A focused implementation plan for a runnable FastAPI example using EcoTrace's existing middleware, with two endpoints and documented emissions-tracking headers.
 - Difficulties: The issue description contained outdated or mismatched middleware references, and the initial Uvicorn command depended on the working directory.
 - What changed: I followed the maintainer-approved middleware interface, documented the correct response headers, and included working Uvicorn commands for both the repository root and the examples/ directory.
+
 ## Testing Strategy
 I tested the FastAPI example locally to verify that it was runnable, returned the expected responses, and exposed EcoTrace's emissions-tracking headers. I also ran the repository's existing automated tests and checked the GitHub pull request's CI results.
 
@@ -185,22 +195,28 @@ After adding the file, I confirmed that the application could start successfully
 **2. Python Syntax Validation**
 
 I checked the example for Python syntax errors using:
+
 ```powershell
 python -m py_compile examples/fastapi_tracking.py
 ```
+
 Result: The command completed successfully without syntax errors.
 
 **3. FastAPI Endpoint Testing**
 
 I started the application from the repository root:
+
 ```powershell
 python -m uvicorn examples.fastapi_tracking:app --app-dir "$HOME\OneDrive\Desktop\AI301\ecotrace" --host 127.0.0.1 --port 8000
 ```
+
 In another terminal, I tested both endpoints:
+
 ```powershell
 curl.exe -i http://127.0.0.1:8000/health
 curl.exe -i http://127.0.0.1:8000/compute
 ```
+
 Observed results:
 - `/health` returned HTTP 200 with {"status":"ok"}.
 - `/compute` returned HTTP 200 with {"status":"completed","result":333332833333500000}.
@@ -211,13 +227,17 @@ These results confirmed that the FastAPI application worked and that the existin
 **4. Repository Test Suite**
 
 I ran the existing pytest suite:
+
 ```powershell
 python -m pytest -q
 ```
+
 Observed result:
+
 ```text
 239 passed, 2 skipped in 58.90s
 ```
+
 The existing test suite passed without requiring changes to the core package.
 
 The two skipped tests were in `tests/test_langchain_callback.py` (lines 188 and 203) because the optional langchain_core test modules were unavailable in my environment. These were skips, not test failures.
@@ -225,9 +245,11 @@ The two skipped tests were in `tests/test_langchain_callback.py` (lines 188 and 
 **5. Git Change Validation**
 
 Before committing, I inspected the staged changes and ran:
+
 ```powershell
 git diff --cached --check
 ```
+
 Result: No whitespace errors were reported.
 
 **6. GitHub Pull Request Checks**
@@ -244,6 +266,7 @@ The pull request was subsequently approved and merged by the repository owner.
 - What it produced: Successful syntax validation, HTTP 200 responses with expected JSON and emissions-tracking headers, 239 passing tests with 2 skips, a clean Git whitespace check, and 11 successful GitHub checks.
 - Difficulties: The Uvicorn import path initially depended on the working directory. I also needed to verify that the emissions headers were actually present rather than relying only on successful HTTP responses.
 - What changed: I corrected the application launch command, tested both endpoints with `curl.exe` -i to inspect response headers, and used the repository's automated test suite and CI checks to confirm that the contribution did not introduce detected regressions.
+
 ## Implementation Notes
 October 2026 - Issue investigation and maintainer clarification (exact day not recorded here)
 
@@ -282,6 +305,7 @@ This was my first completed contribution for this assignment, and the review pro
 - What it produced: A working FastAPI example, validated HTTP responses and tracking headers, successful automated test results, and a merged pull request.
 - Difficulties: The original issue description did not match the existing middleware implementation, and the initial Uvicorn launch command caused an import-path problem.
 - What changed: I confirmed the correct middleware with the maintainer, adjusted the example's documentation and launch commands, and verified the implementation through local testing and GitHub CI before the contribution was merged.
+
 ## Pull Request
 PR Link: https://github.com/Zwony/ecotrace/pull/228
 
@@ -314,6 +338,7 @@ Implementation Commit: https://github.com/Zwony/ecotrace/pull/228/commits/0d6d84
 - What it produced: A reviewed and merged FastAPI example with 11 passing GitHub checks. On November 3, 2026, the PR-monitor generated `run-report.md` and `drafted-move.md`, confirming that PR #228 was merged and suggesting a follow-up to close Issue #211 if necessary.
 - Difficulties: The original issue referenced a different middleware implementation, requiring maintainer clarification. The monitor also could not confirm whether Issue #211 was closed, so its suggested follow-up required independent verification.
 - What changed: I used the maintainer-approved middleware and validated the implementation before merging. After running the monitor, I checked Issue #211 using GitHub CLI and confirmed it was closed as completed. Because I had already thanked the maintainer, I declined the unnecessary follow-up rather than posting another comment.
+
 ## Learnings and Reflections
 **Technical Skills Gained**
 
@@ -334,13 +359,14 @@ I also learned that a successful HTTP response alone is not enough to validate m
 For my next open-source contribution, I would inspect the relevant source files and existing tests earlier, before finalizing an implementation plan. I would also verify the project's execution commands from the repository root and document the expected behavior before writing code.
 
 I would continue communicating with maintainers when requirements are unclear and keep my pull requests focused on one well-defined change. This experience showed me that a useful contribution does not need to be large; it needs to solve the requested problem, be easy to understand, and include evidence that it works.
+
 ## Resources Used
 The following resources helped me understand the issue, implement the FastAPI example, validate its behavior, and complete the contribution.
 - EcoTrace Issue #211: https://github.com/Zwony/ecotrace/issues/211
   I used the issue description to understand the requested example and the maintainer discussion to clarify the correct middleware implementation and response headers.
 - EcoTrace Pull Request #228: https://github.com/Zwony/ecotrace/pull/228
   I used the pull request to document my implementation, review automated checks, receive maintainer feedback, and confirm that the contribution was merged.
-- EcoTrace Middleware Source Code: https://github.com/Zwony/ecotrace/blob/main/`ecotrace/middleware/fastapi.py`
+- EcoTrace Middleware Source Code: https://github.com/Zwony/ecotrace/blob/main/ecotrace/middleware/fastapi.py
   I inspected the existing middleware to identify the correct import path, middleware class, and supported response headers.
 - FastAPI Documentation: https://fastapi.tiangolo.com/
   I referred to FastAPI concepts while building the application, registering middleware, and defining HTTP endpoints.
