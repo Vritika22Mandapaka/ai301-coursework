@@ -1,150 +1,180 @@
-﻿# Before the First Line of Code: What My First Open-Source Contributions Taught Me
+﻿
+# Before the First Line of Code: What My First Open-Source Contribution Taught Me
 
 ## Overview
 
-The most important line in my first merged open-source contribution wasn't a line of Python. It was a question I asked the maintainer.
+The most important part of my first merged open-source contribution was not a line of Python. It was a question I asked the maintainer.
 
-When I found [EcoTrace Issue #211](https://github.com/Zwony/ecotrace/issues/211), I thought my challenge was to write a FastAPI example demonstrating how developers could measure the carbon emissions and execution duration of HTTP requests. It was a focused task in an unfamiliar codebase, and I was excited to contribute something other developers could actually run.
+I selected [EcoTrace Issue #211](https://github.com/Zwony/ecotrace/issues/211), which requested a runnable FastAPI example demonstrating estimated carbon emissions and request duration. The task appeared straightforward until I discovered that the middleware named in the issue did not match the implementation in the repository.
 
-But before writing the example, I discovered something unexpected: **the issue described an interface that didn't exist in the repository as written.**
+I documented the discrepancy and asked the maintainer for clarification. After receiving guidance, I created a 49-line example using the existing middleware, tested both endpoints, and ran the project's test suite.
 
-I had initially repeated the middleware name from the issue in my communication with the maintainer. Only after inspecting the source did I realize the instructions and implementation disagreed. Rather than continuing with an assumption, I asked which interface was correct.
+My contribution was merged as [EcoTrace PR #228](https://github.com/Zwony/ecotrace/pull/228) on October 29, 2026.
 
-That question shaped the contribution. I built a 49-line FastAPI example using EcoTrace's existing middleware, verified its behavior through actual HTTP responses, and ran the project's tests. The result was [PR #228](https://github.com/Zwony/ecotrace/pull/228), merged on October 29, 2026.
-
-What began as a small implementation task became a lesson in engineering judgment: understanding existing code, asking useful questions, and treating evidence—not confidence—as the basis for decisions.
+The experience changed how I approach engineering work: inspect the existing system, clarify uncertainty, and support implementation decisions with evidence.
 
 ## What happened
 
 ### Finding a contribution worth making
 
-In Unit 5, I built **Issue Scout** to evaluate open-source opportunities based on scope, maintainer activity, feasibility, and available evidence.
+During CodePath AI301 Unit 5, I developed Issue Scout to evaluate open-source issues based on scope, feasibility, maintainer activity, and available evidence.
 
-One opportunity, codex-lb Issue #1572, involved encryption-key configuration for stateless replicas. I was interested in it, but unresolved questions about security and configuration behavior made me hesitant to implement anything without clarification. That experience pushed me to refine Issue Scout:** I needed to distinguish technical difficulty from uncertainty about what a safe, acceptable solution would be.
+An early candidate, codex-lb Issue #1572, involved encryption-key configuration for stateless replicas. The work was interesting, but unresolved security and configuration questions made it difficult to define a safe implementation.
 
-EcoTrace Issue #211 was different. It requested a self-contained example with a clear user-facing outcome. I could inspect the integration, run the application, and check whether the expected tracking information appeared.
+That experience led me to distinguish an issue's actionability from its technical difficulty. EcoTrace #211 offered a more focused contribution: a standalone example that I could implement and verify without changing the library's core behavior.
 
-### Discovering the problem before implementing it
+### Discovering the mismatch
 
-The issue requested `StarletteEmissionsMiddleware` from `ecotrace.middleware.starlette` and described an `X-Carbon-gCO2eq` header.
+EcoTrace's issue description referenced a middleware class and response header that differed from the repository's existing implementation.
 
-But the source code in `ecotrace/middleware/fastapi.py` showed a different interface:
+| Component | Issue description | Repository implementation |
+| --- | --- | --- |
+| Middleware | `StarletteEmissionsMiddleware` | `EcoTraceMiddleware` |
+| Import path | `ecotrace.middleware.starlette` | `ecotrace.middleware.fastapi` |
+| Carbon header | `X-Carbon-gCO2eq` | `X-Eco-Carbon-Emitted` |
+| Duration header | Not specified | `X-Eco-Duration` |
 
-|                 | Issue description               | Repository implementation     |
-| --------------- | ------------------------------- | ----------------------------- |
-| Middleware      | `StarletteEmissionsMiddleware`  | `EcoTraceMiddleware`          |
-| Import path     | `ecotrace.middleware.starlette` | `ecotrace.middleware.fastapi` |
-| Carbon header   | `X-Carbon-gCO2eq`               | `X-Eco-Carbon-Emitted`        |
-| Duration header | Not specified                   | `X-Eco-Duration`              |
+I initially repeated the issue's middleware name before checking the source. Once I identified the discrepancy, I asked the maintainer which interface the example should use.
 
-I had already repeated the issue's proposed middleware name before verifying it. That was my mistake. I corrected course by documenting the discrepancy and asking the maintainer rather than silently inventing an interface. The maintainer acknowledged the finding with “Great catch” and confirmed that the example should use the existing FastAPI integration ([discussion](https://github.com/Zwony/ecotrace/issues/211#issuecomment-6507532319)).
+The maintainer responded with "Great catch" and confirmed that I should demonstrate the existing FastAPI middleware.
 
-The maintainer confirmed that the example should use the existing FastAPI middleware ([Issue #211 clarification](https://github.com/Zwony/ecotrace/issues/211#issuecomment-6507532319)).
+Evidence: [Maintainer clarification on Issue #211](https://github.com/Zwony/ecotrace/issues/211#issuecomment-6507532319).
 
-That response resolved the ambiguity and changed my implementation plan. I no longer needed to build around the issue's outdated names; I needed to demonstrate the code that actually existed.
+That response changed my implementation plan. Rather than creating or referencing a nonexistent interface, I could build directly on the integration already maintained by the project.
 
-### Getting the example to run
+### Building the example
 
-I added `examples/fastapi_tracking.py`, registering the existing middleware:
+I added `examples/fastapi_tracking.py` and registered the existing middleware:
 
-```python
-app.add_middleware(EcoTraceMiddleware)
-```
+    app.add_middleware(EcoTraceMiddleware)
 
-The example provided `/health`, returning a basic status, and `/compute`, performing a calculation to demonstrate tracking during a more active request.
+The application included two endpoints:
 
-I included dependency installation, startup instructions, example requests, and expected tracking headers. The change remained one new file with 49 additions and no modifications to the core package.
+- `GET /health` returned a lightweight status response.
+- `GET /compute` performed a calculation to demonstrate tracking during a more active request.
 
-**Evidence:** [Implementation commit](https://github.com/Zwony/ecotrace/commit/0d6d842788588f8133fbe354866993355a679434).
+I documented installation, startup, example requests, and the expected response headers. The change consisted of one new file with 49 additions and no modifications to EcoTrace's core package.
 
-### A small debugging problem with a useful lesson
+Evidence: [Implementation commit](https://github.com/Zwony/ecotrace/commit/0d6d842788588f8133fbe354866993355a679434).
 
-After writing the example, I encountered an import error while starting the application with Uvicorn.
+### Fixing a startup problem
 
-Initially, I used the short module name from the repository root, but Python couldn't locate the example in that context. This wasn't a major code defect, but it changed how I thought about documentation.
+My first Uvicorn command failed when executed from the repository root:
 
-An example is only useful if another developer can follow its instructions and reproduce the result.
+    uvicorn fastapi_tracking:app --reload
 
-My first Uvicorn launch failed because I ran the short module name from the repository root:
+The problem was the module path, not the middleware. From the repository root, the correct command was:
 
-```bash
-uvicorn fastapi_tracking:app --reload
-```
+    uvicorn examples.fastapi_tracking:app --reload
 
-Python couldn't resolve the example from that directory. The correct root-level command was:
+The shorter command worked when executed inside `examples/`.
 
-```bash
-uvicorn examples.fastapi_tracking:app --reload
-```
+I corrected the documentation because a runnable example is only useful when another developer can reproduce it from the stated working directory.
 
-The shorter command worked from inside `examples/`. This was a small debugging problem, but it taught me that documentation must account for the environment in which someone will follow it.
+### Testing the implementation
 
-### Proving the middleware was working
+I used `curl.exe` to verify that both endpoints returned successful responses and included the expected tracking headers.
 
-I tested both endpoints with `curl.exe`. I specifically checked the tracking headers because a `200 OK` response alone wouldn't demonstrate the purpose of the contribution.
+Evidence - `/health`:
 
-**Evidence — `/health`:**
+    HTTP/1.1 200 OK
+    x-eco-carbon-emitted: 0.00003795g
+    x-eco-duration: 0.0529s
+    {"status":"ok"}
 
-```text
-HTTP/1.1 200 OK
-x-eco-carbon-emitted: 0.00003795g
-x-eco-duration: 0.0529s
-{"status":"ok"}
-```
+Evidence - `/compute`:
 
-**Evidence — `/compute`:**
+    HTTP/1.1 200 OK
+    x-eco-carbon-emitted: 0.00003753g
+    x-eco-duration: 0.0522s
+    {"status":"completed","result":333332833333500000}
 
-```text
-HTTP/1.1 200 OK
-x-eco-carbon-emitted: 0.00003753g
-x-eco-duration: 0.0522s
-{"status":"completed","result":333332833333500000}
-```
+I also ran the repository's existing automated tests:
 
-Both returned the expected JSON and EcoTrace headers. I also ran the project's automated test suite:
+    239 passed, 2 skipped in 58.90s
 
-**pytest output**
+The HTTP checks demonstrated the example's observable behavior, while the automated suite provided broader regression evidence. Neither test established that the emissions estimates were scientifically accurate.
 
-```text
-239 passed, 2 skipped in 58.90s
-```
+### The contribution was merged
 
-The skips concerned optional LangChain dependencies. I also validated Python syntax and checked the staged changes for whitespace errors. The manual endpoint checks and automated tests served different purposes. The HTTP checks verified the new example's observable behavior, while the existing tests provided broader regression confidence. These checks gave me confidence that the example behaved as intended without breaking the existing tests.
+All 11 GitHub checks passed. The maintainer praised the endpoints, documentation, and middleware integration before merging [PR #228](https://github.com/Zwony/ecotrace/pull/228) on October 29, 2026.
 
-### The merge - the moment the contribution became real
+The result was a small, focused contribution that other developers could use to understand EcoTrace's existing FastAPI integration.
 
-The PR added **49 lines in one file**, without modifying the core package. All **11 GitHub checks passed**. The maintainer's review stated:
+### How the experience improved my tools
 
-- Thank you for the well-structured contribution and clean implementation. The endpoints, docstrings, and middleware integration look great and adhere strictly to the project requirements. Merging now.
+My contribution also influenced the AI-assisted workflows I developed during CodePath AI301.
 
-[PR #228](https://github.com/Zwony/ecotrace/pull/228) merged on October 29, 2026.
+#### Issue Scout - Unit 5
 
-The review mattered because it recognized not just the working endpoints, but the documentation and integration choices that made the example useful.
+I revised the rubric from `scope-fits` to `scope-feasible` and introduced informational difficulty classifications: straightforward, moderate, and ambitious.
 
-### What I changed in my tools
+This helped me avoid treating complex but actionable issues as automatically unsuitable.
 
-The contribution also shaped the AI-assisted workflows I developed across Units 5–8.
+#### Voice Guard - Unit 6
 
-**Unit 5 — Issue Scout:** I refined issue scoring to account for ambiguous requirements and realistic feasibility, rather than treating technical difficulty as the only challenge.
+I discovered that my command hook recognized Bash but not PowerShell. I expanded the accepted tool names:
 
-**Unit 6 — Voice Guard:** I updated communication and command checks to accommodate Windows PowerShell, after finding that Bash-oriented guidance didn't always fit my environment.
+    - if payload.get("tool_name") != "Bash":
+    + if payload.get("tool_name") not in ("Bash", "PowerShell"):
 
-**Unit 7 — Ship Gate:** A retrospective review helped me separate scoped lint checks from full-suite validation and identify a missing newline.
+The guard log also recorded blocked GitHub commands whose message bodies could not be inspected:
 
-**Unit 8 — PR Monitor:** The tool suggested asking the maintainer to close Issue #211. I checked GitHub, found the issue already closed and the maintainer already thanked, and chose not to post.
+    2026-11-01 04:05 [hook] stop:
+    no body the guard can read
+    (interactive and --help forms are stopped on purpose)
+    target: gh pr create --help
 
-That final decision reflected the same lesson as the middleware mismatch: AI tools can suggest the next action, but I remain responsible for verifying whether it is correct or necessary.
+This demonstrated blocking behavior, although the log did not identify which shell originated that event.
+
+#### Ship Gate - Unit 7
+
+On November 1, I ran a retrospective contribution-readiness check against my EcoTrace work.
+
+The gate initially blocked the review because of a Windows test-command problem, missing review evidence, and documentation issues.
+
+The recorded verdict sequence in `gate-log.md` was:
+
+    2026-11-01 04:20 [manual]
+    - verdict: BLOCK
+
+    2026-11-01 04:23 [manual]
+    - verdict: BLOCK
+
+    2026-11-01 04:29 [manual]
+    - verdict: BLOCK
+
+    2026-11-01 04:41 [manual]
+    - verdict: PASS
+
+The final retrospective check recorded all nine required checks passing, along with the preferred reviewer-context check. The supporting evidence included the 239 passing tests and two skips.
+
+The review also identified a missing final newline. I disclosed that finding rather than claiming the committed file had been corrected.
+
+Importantly, Ship Gate ran after the PR was merged. Its PASS was not a pre-merge approval.
+
+#### PR Monitor - Unit 8
+
+On November 3, PR Monitor detected that PR #228 had merged and suggested a conditional follow-up concerning Issue #211.
+
+I checked GitHub and confirmed that the issue was already closed and that I had already thanked the maintainer.
+
+I did not send another message. The experience reinforced that automated recommendations still require human verification.
 
 ## Limitations and what's next
 
-The FastAPI example worked in my manual checks, but I didn't add dedicated automated tests asserting the endpoint responses and `X-Eco-*` headers. SonarQube reported 0.0% new-code coverage, although Codecov reported coverage of modified lines. The missing endpoint-specific tests remain a meaningful limitation regardless of those different reports.
+Although the FastAPI example worked during manual testing, I did not add dedicated automated tests for the endpoint response bodies and `X-Eco-*` headers.
 
-The recorded emissions values confirmed that the middleware returned tracking information; they did not establish measurement accuracy or emissions reduction. I did not measure consistency across repeated runs or compare emissions before and after an optimization. I would need a separate benchmarking approach to make those claims responsibly.
+SonarQube reported 0.0% new-code coverage, while Codecov reported coverage of modified lines. Endpoint-specific tests would provide stronger evidence regardless of those different reports.
 
-My next assigned contribution is [EcoTrace Issue #213](https://github.com/Zwony/ecotrace/issues/213), a Flask application and Blueprint emissions-tracking example. I plan to inspect the existing Flask integration before coding, clarify any interface ambiguity, document commands that work from the correct directory, and propose automated tests for response bodies and tracking headers within the agreed issue scope.
+The emitted values showed that the middleware returned measurements, not that those measurements were accurate or that the example reduced carbon emissions. Validating those claims would require repeatable benchmarks and an appropriate measurement methodology.
 
-I also completed a second merged contribution, [Rafter PR #318](https://github.com/Raftersecurity/rafter-cli/pull/318), improving Windsurf integration documentation with setup, verification, troubleshooting, security-tool references, and uninstall instructions. That work reinforced how important clear, reproducible guidance is to a developer's experience.
+My next assigned contribution is [EcoTrace Issue #213](https://github.com/Zwony/ecotrace/issues/213), involving Flask and Blueprint emissions-tracking examples.
 
-I began this contribution wanting to get code merged. I finished it with a better standard for what makes a contribution useful.
+I plan to inspect the existing integration first, confirm the intended interface, document reproducible commands, and propose focused endpoint tests within the agreed scope.
 
-**The 49 lines mattered because they worked. The question I asked beforehand mattered because it helped me build the right thing.**
+I also completed [Rafter PR #318](https://github.com/Raftersecurity/rafter-cli/pull/318), improving Windsurf integration documentation. That contribution reinforced the value of clear setup, verification, troubleshooting, and removal instructions.
+
+My biggest lesson is that a successful contribution requires more than working code. It requires understanding the problem, checking assumptions, communicating clearly, and providing evidence that others can inspect.
+
+The 49 lines mattered because they worked. The question I asked beforehand mattered because it helped me build the right thing.

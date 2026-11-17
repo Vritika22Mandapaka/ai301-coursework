@@ -1,19 +1,20 @@
-### My First Merged Open-Source Contribution: Why Asking the Right Question Mattered More Than Writing Code
+My first open-source Python contribution has been merged!
 
-I made my first merged open-source contribution to EcoTrace, a Python project that helps developers understand the carbon emissions of their applications. I built a working FastAPI example that shows how much carbon is estimated and how long each request takes.
+I contributed a working FastAPI example to EcoTrace, an open-source project that helps developers estimate the energy and carbon impact of software.
 
-But the most valuable part of this experience happened before I wrote the code.
+The most valuable lesson came before I wrote the code.
 
-While exploring the repository, I noticed that the GitHub issue described a different interface from the one actually implemented. I had initially trusted the instructions, but reading the source made me question that assumption.
+While reviewing the issue, I discovered that the requested middleware name and response headers didn't match the repository's implementation. Instead of assuming the instructions were correct, I checked the source and asked the maintainer for clarification.
 
-Instead of guessing, I asked the maintainer for clarification. That conversation helped me build the example using the project's existing functionality.
+With that guidance, I built a focused 49-line example demonstrating request-level emissions and duration tracking.
 
-I then tested both endpoints, verified the tracking information, and ran the project's test suite: 239 tests passed, with 2 skipped. All 11 GitHub checks passed, and my pull request was merged on October 29, 2026.
+I verified both endpoints, confirmed the expected HTTP response headers, and ran the project's test suite: 239 tests passed, with 2 skipped. All 11 GitHub checks passed, and the maintainer merged my pull request on October 29, 2026.
 
-Seeing my contribution accepted was exciting, but the lesson stayed with me: good engineering isn't just about writing code. It's about asking the right questions, verifying assumptions, and building something others can actually use.
+This experience taught me that good engineering isn't just about writing code. It's about understanding existing systems, asking questions early, and validating your work.
 
-Grateful for the maintainer's guidance and looking forward to contributing more.
+I'm grateful to the EcoTrace maintainer for the guidance and review, and to CodePath for helping me build my open-source contribution workflow.
 
+You can see my merged contribution here:
 https://github.com/Zwony/ecotrace/pull/228
 
-https://lnkd.in/p/dTrsfYcC
+#OpenSource #Python #FastAPI #CodePath #SoftwareEngineering
