@@ -15,3 +15,5 @@ Seeing my contribution accepted was exciting, but the lesson stayed with me: goo
 Grateful for the maintainer's guidance and looking forward to contributing more.
 
 https://github.com/Zwony/ecotrace/pull/228
+
+https://lnkd.in/p/dTrsfYcC
